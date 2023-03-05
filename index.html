@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>My Website</title>
+	<!-- Link to the Open Sans font -->
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<style>
+		/* Apply the font and background color styles to the body element */
+		body {
+			display: flex;
+            flex-direction: column;
+            font-family: "Open Sans", sans-serif;
+			background-color: #0d0d0d;
+            color: white;
+            padding: 12px;
+		}
+
+        header{
+
+            display: grid;
+            place-items: center;
+        }
+
+        header h1 {
+             font-size: 2rem;
+
+        }
+
+        header h2 {
+            font-size: 1rem;
+        }
+
+        main {
+
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+
+        }
+
+        main section {
+
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+
+
+        }
+
+        main section div{
+
+            text-align: center;
+            border: 1px solid white;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        main section div:hover {
+
+            border-color: plum;
+
+        }
+
+        main section p {
+
+            text-align: center;
+            padding: 8px 16px;
+            
+
+        }
+
+        label {
+
+            text-align: center;
+            padding: 8px 16px;
+            align-items: center;
+
+        }
+
+        #second,#loading,#recommendations{
+
+            display: none;
+        }
+
+
+        button {
+
+            text-align: center;
+            background: plum;
+            color: white;         
+            cursor: pointer;
+            border: 1px solid white;
+            border-radius: 5px;
+            padding: 8px 16px;
+        }
+
+        button:hover {
+
+            background: transparent;
+            border: 1px solid white;
+        }
+
+        span {
+
+        text-align: center;
+        background: plum;
+        color: white;         
+        cursor: pointer;
+        border: 1px solid white;
+        border-radius: 5px;
+        padding: 8px 16px;
+        }
+
+        span:hover {
+
+        background: transparent;
+        border: 1px solid white;
+        }
+
+
+	</style>
+</head>
+<body>
+
+    <header>
+
+        <h1>Beep Boop, I am Categorizor bot &#129302;</h1>
+        <h2>Here to help you categorize issues &#129761;</h2>
+
+    </header>
+	<main>
+        <section id="first">
+
+            <label for="email-input">Paste your email &#128071;</label>
+            <textarea id="email-input" rows="25" cols="50"></textarea>
+            <button id="btn"><b>Categorize</b></button>
+
+        </section>
+        <section id="loading">
+
+            <p>Loading...</p>
+
+        </section>           
+        <section id="recommendations">
+        </section>
+        <section id="try-again">
+            <a href="http://localhost:8088/">
+                <button><b>Try again</b></button>
+            </a> 
+        </section>
+    </main>
+</body>
+<script>
+    const categories = [
+    'connection issue', 'recovery phrase issue', 'metamask issues', 'nft issue', 'lost tokens', 'tokens sent to the wrong network', 'hardware issue'
+    ]
+    let emails = []
+    let chatRecommends = []
+    const firstEle = document.getElementById('first')
+    document.getElementById("btn").addEventListener("click", generateAnswer)
+    const thirdEle = document.getElementById('loading')
+    const fourthEle = document.getElementById('recommendations')
+    const fithEle = document.getElementById('try-again')
+
+
+    async function generateAnswer(){
+        const emailInput = document.getElementById("email-input").value
+        emails.push(emailInput)
+        let request = 
+            `Hi chat, I am going to provide you with a technical issue faced by a customer of Ledger (https://www.ledger.com/). I would like you to categorize this issue. The categories you can use are: "${categories}" . It is okay to use multiple categories to categorize the issue, just make sure you do not use more than 2 and choose the most relevant category. Here is the issue: "${emails}".`
+        console.log(request)
+        try {
+            firstEle.style.display = 'none'
+            thirdEle.style.display = 'flex'
+            fithEle.style.display = 'none'
+            const res = await fetch ('http://localhost:8088/gpt', {
+               method: 'POST',
+               headers : {
+                    'Content-Type': 'application/json'
+                },
+                body : JSON.stringify({'question': request})
+
+            })
+
+            const { response } = await res.json()
+            thirdEle.style.display = 'none'
+            fourthEle.innerHTML = `<p>${response}</p>`;
+            fourthEle.style.display = 'flex'
+            fithEle.style.display = 'flex'
+            //navigator.clipboard.writeText(response)
+            //alert("Copied to clipboard!")
+            console.log(response)
+            
+    
+        } catch (err) {
+            console.log(err.question)
+        }
+        
+    }
+
+</script>
+</html>
